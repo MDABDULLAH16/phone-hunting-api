@@ -1,18 +1,24 @@
 //LoadPHone hunting api
-const loadPhone = async (searchText) => {
+const loadPhone = async (searchText, dataLimit) => {
   const url2 = `https://openapi.programming-hero.com/api/phones?search=${searchText}`;
   //   const url = `https://openapi.programming-hero.com/api/phones?search=iphone`;
   const res = await fetch(url2);
   const data = await res.json();
-  displayPhone(data.data);
+  displayPhone(data.data, dataLimit);
 };
 
-const displayPhone = (phones) => {
+const displayPhone = (phones, dataLimit) => {
   const getPhoneContainer = document.getElementById("phone-container");
   getPhoneContainer.innerText = "";
   //   const slicePhone = phones.slice(0, 3);
   //   console.log(slicePhone);
-  phones = phones.slice(0, 10);
+  const showAllBtn = document.getElementById("show-all");
+  if (dataLimit && phones.length > 10) {
+    phones = phones.slice(0, 10);
+    showAllBtn.classList.remove("d-none");
+  } else {
+    showAllBtn.classList.add("d-none");
+  }
 
   const noFoundMassage = document.getElementById("no-found-massage");
   if (phones.length === 0) {
@@ -41,14 +47,21 @@ const displayPhone = (phones) => {
   //   load over hare
   spinnerToggle(false);
 };
-
-// load start with search btn clicked
-const searchPhone = () => {
+//load with common function for show all btn
+const processSearch = (dataLimit) => {
+  spinnerToggle(true);
   const getSearchText = document.getElementById("search-field");
   const searchText = getSearchText.value;
-  loadPhone(searchText);
-  spinnerToggle(true);
+  loadPhone(searchText, dataLimit);
 };
+// load start with search btn clicked
+const searchPhone = () => {
+  processSearch(10);
+};
+// show all data btn
+document.getElementById("btn-show-all").addEventListener("click", function () {
+  processSearch();
+});
 
 // loader function
 const spinnerToggle = (isLoading) => {
@@ -59,5 +72,4 @@ const spinnerToggle = (isLoading) => {
     spninnerContainer.classList.add("d-none");
   }
 };
-
 // loadPhone("iphone");
